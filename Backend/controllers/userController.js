@@ -1,7 +1,7 @@
 const {UserModel} = require("../models/user")
 const bcrypt = require("bcrypt")
 const signupController = async(req,res)=>{
- const {firstName , lastName , email , userName , password} = req.body
+ const {firstName , lastName , email , userName , password , skills , gender} = req.body
 
  if(!firstName || !lastName || !email || !userName || !password) {
     return res.status(400).json({
@@ -20,7 +20,9 @@ const signupController = async(req,res)=>{
         lastName : lastName,
         userName : userName,
         password : hashedPassword,
-        email : email
+        email : email,
+        skills : skills, 
+        gender : gender
     
      })
     
@@ -117,6 +119,29 @@ const updateController = async(req,res)=>{
 
 }
 const pathupdateController = async(req,res)=>{
+ const {email , ...updateddata }  = req.body;
+ 
+
+if(!email) return res.status(400).json({message : "email required!"})
+ try{
+
+   const user =  await UserModel.findOneAndUpdate({
+      email : email
+   },{
+     
+    $set :updateddata
+   })
+
+   console.log(user);
+   
+   return res.json({message : "Updation of user data is successfull",
+user})
+
+ }catch(error){
+   console.error("Error while updation"+ error)
+   return res.json({"UPDATE FAILED " : error.message})
+ }
+
 
 }
 const deleteController = async(req,res)=>{
