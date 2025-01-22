@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config()
 
 
-async function connectDB(DB_URL){
+async function connectDB(){
    
 
     try{
