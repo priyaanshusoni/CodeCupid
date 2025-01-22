@@ -121,10 +121,35 @@ const updateController = async(req,res)=>{
 const pathupdateController = async(req,res)=>{
  const {email , ...updateddata }  = req.body;
  
+ // I don't want user to allow to update email id's once registered
 
-if(!email) return res.status(400).json({message : "email required!"})
+ if(!email) { // remove email check after auth middleware coz this route restricts email update
+   return res.status(400).json({
+      message : "Kindly fill all necessary details"
+   })}
+
  try{
 
+   const ALLOWED_UPDATES = [
+      "photoUrl",
+      "bio",
+      "gender",
+      "age",
+      "skills",
+      "firstName",
+      "lastName",
+      "password",
+      "userName",
+      "email"
+   ]
+
+   //Convering keys from req.body to an array using Object.keys() then applying every function on that array to check it only has allowed updates fields so that user if sends any 
+   //random field to update we return back a error message also email is not updated through this code .
+
+   const isupdateAllowed = Object.keys(updateddata).every((x)=>ALLOWED_UPDATES.includes(x))
+   if(!isupdateAllowed) return res.status(400).json({message : "Update not allowed"})
+
+   
    const user =  await UserModel.findOneAndUpdate({
       email : email
    },{
@@ -132,7 +157,7 @@ if(!email) return res.status(400).json({message : "email required!"})
     $set :updateddata
    })
 
-   console.log(user);
+   if(!user)return res.status(400).json({message : "No user found "})
    
    return res.json({message : "Updation of user data is successfull",
 user})
