@@ -1,7 +1,8 @@
+const e = require("express")
 const {UserModel} = require("../models/user")
 const bcrypt = require("bcrypt")
 const signupController = async(req,res)=>{
- const {firstName , lastName , email , userName , password , skills , gender} = req.body
+ const {firstName , lastName , email , userName , password , skills , gender , photoUrl} = req.body
 
  if(!firstName || !lastName || !email || !userName || !password) {
     return res.status(400).json({
@@ -22,7 +23,8 @@ const signupController = async(req,res)=>{
         password : hashedPassword,
         email : email,
         skills : skills, 
-        gender : gender
+        gender : gender,
+        photoUrl : photoUrl
     
      })
     
@@ -32,7 +34,7 @@ const signupController = async(req,res)=>{
      })
  } catch(error){
     console.error("Error during signup:", error);
-    return res.status(500).json({ message: "Server error. Please try again later." });
+    return res.status(500).json({ message: "Server error. Please try again later."+error.message });
  }
  
 }

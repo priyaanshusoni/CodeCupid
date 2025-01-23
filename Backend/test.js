@@ -1,3 +1,13 @@
+// /**
+//  * The function checks if all keys in the `dummyData` object are included in the `ALLOWED_UPDATES`
+//  * array using the `every()` function in JavaScript.
+//  * @param x - x represents each key in the dummyData object when iterating over them using the every()
+//  * function.
+//  * @returns The code is checking if all keys in the `dummyData` object are included in the
+//  * `ALLOWED_UPDATES` array. The `keyArray.every((x)=>ALLOWED_UPDATES.includes(x))` statement returns
+//  * `true` if all keys in the `dummyData` object are present in the `ALLOWED_UPDATES` array, otherwise
+//  * it returns `false`.
+//  */
 const dummyData = {
     id: 1,
     //1. This is How every() function works in Javascript
@@ -51,3 +61,8 @@ const dummyData = {
 
 
  
+const validator = require("validator")
+
+let a = validator.
+
+console.log(a);
