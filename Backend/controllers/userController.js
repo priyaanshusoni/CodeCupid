@@ -78,7 +78,7 @@ const signinController = async (req, res) => {
         .status(400)
         .json({ message: "No user found , sign up instead" });
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = await user.validatePassword(password);
 
     if (!isPasswordMatch)
       return res.status(400).json({
@@ -86,14 +86,7 @@ const signinController = async (req, res) => {
       });
     // Creating a token for the user
     else {
-      const token = jwt.sign(
-        {
-          userid: user._id,
-        },
-        process.env.JWT_SECRET,{
-          expiresIn : "2d"
-        }
-      );
+       const token = await user.getJWT(); // Schema methods
 
       res.cookie("token" , token, {
         expires: new Date(Date.now() + 48 *60*60*1000)//48 hrs

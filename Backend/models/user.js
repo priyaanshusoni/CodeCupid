@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
+const { retry } = require("statuses");
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Schema.ObjectId;
 const validator = require("validator");
+require("dotenv").config();
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const userSchema = new Schema(
   {
@@ -66,6 +70,31 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.methods.getJWT = function(){
+
+  const user = this;
+ const token = jwt.sign(
+        {
+          userid: user._id,
+        },
+        process.env.JWT_SECRET,{
+          expiresIn : "2d"
+        }
+      );
+
+      return token;
+}
+userSchema.methods.validatePassword = async  function(userPassword){
+
+  const user = this;
+
+  const isPasswordMatch = await bcrypt.compare(userPassword , user.password);
+  
+
+  return isPasswordMatch;
+ 
+}
 
 const UserModel = mongoose.model("user", userSchema);
 
