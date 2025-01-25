@@ -1,6 +1,9 @@
-const e = require("express");
+const zod = require("zod");
+const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models/user");
+const { UserSchema } = require("../utils/SchemaValidation");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 const signupController = async (req, res) => {
   const {
     firstName,
@@ -13,12 +16,20 @@ const signupController = async (req, res) => {
     photoUrl,
     experience,
   } = req.body;
-
   if (!firstName || !lastName || !email || !userName || !password) {
     return res.status(400).json({
       message: "Kindly fill all necessary details",
     });
   }
+  let validationResult = UserSchema.safeParse(req.body);
+
+  if (!validationResult.success)
+    return res
+      .status(400)
+      .json({
+        message: "Validation failed",
+        error: validationResult.error.errors,
+      });
 
   try {
     const existingUser = await UserModel.findOne({ email: email });
@@ -45,11 +56,9 @@ const signupController = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during signup:", error);
-    return res
-      .status(500)
-      .json({
-        message: "Server error, Please try again later " + error.message,
-      });
+    return res.status(500).json({
+      message: "Server error, Please try again later " + error.message,
+    });
   }
 };
 
@@ -75,7 +84,23 @@ const signinController = async (req, res) => {
       return res.status(400).json({
         message: "Invalid Password",
       });
-    else return res.json({ message: "login successfull", user });
+    // Creating a token for the user
+    else {
+      const token = jwt.sign(
+        {
+          userid: user._id,
+        },
+        process.env.JWT_SECRET,{
+          expiresIn : "2d"
+        }
+      );
+
+      res.cookie("token" , token, {
+        expires: new Date(Date.now() + 48 *60*60*1000)//48 hrs
+      }) // sending back token in cookie
+
+      return res.json({ message: "login successfull" });
+    }
   } catch (error) {
     console.error("Error during signin:", error);
     return res
@@ -99,28 +124,18 @@ const allprofileController = async (req, res) => {
   }
 };
 const userprofileController = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({
-      message: "Kindly fill all necessary details",
-    });
-  }
-
+  
   try {
     const user = await UserModel.findOne({
-      email: email,
+      _id : req.userid
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Email does not exist" });
+      return res.status(400).json({ message: "Sign in Please !" });
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordMatch)
-      return res.status(403).json({ message: "Invalid email or password" });
-
+    console.log("Cookies : " , req.cookies);
+    
     return res.json({
       user,
     });
@@ -210,6 +225,31 @@ const deleteController = async (req, res) => {
   }
 };
 
+
+const logoutController = async(req,res)=>{
+    
+  try{
+
+    res.clearCookie("token");
+
+    return res.json({
+      message : "Logged out successfully !"
+    })
+
+  }catch(error){
+    console.error("Error during Logout:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error. Please try again later." });
+
+  }
+}
+
+
+const connectionRequestController = async(req,res)=>{
+
+}
+
 module.exports = {
   signupController,
   signinController,
@@ -218,4 +258,6 @@ module.exports = {
   allprofileController,
   deleteController,
   userprofileController,
+  logoutController,
+  connectionRequestController
 };
