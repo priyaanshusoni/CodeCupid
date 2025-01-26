@@ -53,7 +53,10 @@ const userSchema = new Schema(
       type: [String],
     },
 
-    prompts: [String],
+    prompts: {
+      type : [String],
+      maxLength : 3
+    }, 
 
     experience: [
       {

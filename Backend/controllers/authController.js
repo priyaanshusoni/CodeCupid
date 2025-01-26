@@ -16,6 +16,7 @@ const signupController = async (req, res) => {
     gender,
     photoUrl,
     experience,
+    prompts
   } = req.body;
   if (!firstName || !lastName || !email || !userName || !password) {
     return res.status(400).json({
@@ -50,6 +51,7 @@ const signupController = async (req, res) => {
       gender: gender,
       photoUrl: photoUrl,
       experience: experience,
+      prompts : prompts
     });
 
     return res.status(201).json({
