@@ -21,6 +21,13 @@
 ->Connection Router
     -POST request/send/interested/:userId
     -POST request/send/ignored/:userId
+
+    - The above two API's can be made dynamic by just ->
+
+    -POST request/send/:status/:userId
+    here this status = ["interested" , "ignore"]
+
+
     -POST /request/review/accepted/:requestID
     -POST /request/review/rejected/:requestID
 

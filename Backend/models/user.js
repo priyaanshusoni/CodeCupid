@@ -30,8 +30,12 @@ const userSchema = new Schema(
     age: { type: Number, min: 18 },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Other"],
-      default: "Other",
+      enum:{
+        values : ["Male", "Female", "Other"],
+        default : "Other",
+        message : '{VALUE} is not supported for gender'
+      } 
+    
     },
 
     photoUrl: {

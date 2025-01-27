@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models/user");
 const { UserSchema } = require("../utils/SchemaValidation");
 const bcrypt = require("bcrypt");
+const {ConnectionRequestModel} = require("../models/connectionRequest")
 require("dotenv").config();
 
 
@@ -27,8 +28,38 @@ const updateController = async (req, res) => {};
 
 
 
+const requestController = async(req,res)=>{
 
+  try{
+
+    const userId = req.userid;
+
+    const connectionRequests = await ConnectionRequestModel.find({
+      toUserId : userId,
+      status : "interested"
+    })
+
+    if(connectionRequests.length==0){
+      return res.json({
+        matches : "No likes yet !"
+      })
+    }
+
+
+
+    return res.json({
+      connectionRequests
+    })
+
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({ message: "Server error. Please try again later." });
+
+  }
+
+}
 module.exports = {
   updateController,
-  feedController, 
+  feedController,
+  requestController 
 };
