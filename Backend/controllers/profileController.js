@@ -5,7 +5,7 @@ const { UserSchema } = require("../utils/SchemaValidation");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const profileeditController = async (req, res) => {
-  const {  ...updateddata } = req.body;
+  const { ...updateddata } = req.body;
 
   // I don't want user to allow to update email id's once registered
 
@@ -39,36 +39,37 @@ const profileeditController = async (req, res) => {
 
     const user = await UserModel.findOneAndUpdate(
       {
-        _id : req.userid
+        _id: req.userid,
       },
       {
         $set: updateddata,
       }
     );
 
-    if (!user) return res.status(400).json({ message: "not logged in , kindly login" });
+    if (!user)
+      return res.status(400).json({ message: "not logged in , kindly login" });
 
-    return res.json({ message: "Updation of user data is successfull :" + user.email });
+    return res.json({
+      message: "Updation of user data is successfull :" + user.email,
+    });
   } catch (error) {
     console.error("Error while updation" + error);
     return res.json({ "UPDATE FAILED ": error.message });
   }
 };
 
-
 const userprofileController = async (req, res) => {
-  
   try {
     const user = await UserModel.findOne({
-      _id : req.userid
+      _id: req.userid,
     });
 
     if (!user) {
       return res.status(400).json({ message: "Sign in Please !" });
     }
 
-    console.log("Cookies : " , req.cookies);
-    
+    console.log("Cookies : ", req.cookies);
+
     return res.json({
       user,
     });
@@ -80,53 +81,43 @@ const userprofileController = async (req, res) => {
   }
 };
 
+const passwordController = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
 
-
-const passwordController = async(req,res)=>{
-
-  const {oldPassword , newPassword} = req.body;
-
-  
-  
-
-  try{
-
+  try {
     const user = await UserModel.findById(req.userid);
 
-    if(!user) return res.status(400).json({message : "No user found , login again !"})
+    if (!user)
+      return res.status(400).json({ message: "No user found , login again !" });
     // console.log(user);
-    
+
     const isPasswordmatch = await user.validatePassword(oldPassword);
 
-   
-    
-    if(!isPasswordmatch) return res.status(400).json({message : "password didn't match with the old password"})
+    if (!isPasswordmatch)
+      return res
+        .status(400)
+        .json({ message: "password didn't match with the old password" });
 
-      const hashedpassword = await bcrypt.hash(newPassword , 10);
+    const hashedpassword = await bcrypt.hash(newPassword, 10);
 
     await user.updateOne({
-      password : hashedpassword
-    })
+      password: hashedpassword,
+    });
 
     // $2b$10$yG.8exhqmb.OE1nZjEd01eFydppgi9YKdFzPVNy6DfxdP0.gyQliS
-
 
     // $2b$10$yG.8exhqmb.OE1nZjEd01eFydppgi9YKdFzPVNy6DfxdP0.gyQliS
 
     // $2b$10$1X4I0MzJ7/P4jalZ8DDV2.Xd1DO9wvoO1JlW0x28JOuQWWGrDHOY.
 
-    return res.json({message : "Password updated succesfully."})
-
-  }catch(error){
-
+    return res.json({ message: "Password updated succesfully." });
+  } catch (error) {
     console.error("Error during password updation:", error);
     return res
       .status(500)
-      .json({ message: "Server error. Please try again later." })
-
+      .json({ message: "Server error. Please try again later." });
   }
-
-}
+};
 
 const deleteprofileController = async (req, res) => {
   const { email, password } = req.body;
@@ -139,7 +130,10 @@ const deleteprofileController = async (req, res) => {
   const userId = req.userid;
 
   try {
-    const user = await UserModel.findOneAndDelete({ email: email , _id : userId});
+    const user = await UserModel.findOneAndDelete({
+      email: email,
+      _id: userId,
+    });
 
     if (!user) {
       return res
@@ -147,7 +141,7 @@ const deleteprofileController = async (req, res) => {
         .json({ message: "wrong email or password , try again later" });
     }
 
-    return res.json({ message: "Account deletion succesfull :"+user.email});
+    return res.json({ message: "Account deletion succesfull :" + user.email });
   } catch (error) {
     console.error("Error during account deletion:", error);
     return res
@@ -156,17 +150,9 @@ const deleteprofileController = async (req, res) => {
   }
 };
 
-
-
-
-
-
-  module.exports = {
- 
-    profileeditController,
-    userprofileController,
-    deleteprofileController,
-    passwordController
-
-
-  }
+module.exports = {
+  profileeditController,
+  userprofileController,
+  deleteprofileController,
+  passwordController,
+};
