@@ -20,7 +20,14 @@ const feedController = async (req, res) => {
     }).select("fromUserId  toUserId");
 
     // console.log(connectionRequests);
+    const pageNo = parseInt(req.query.page)|| 1;
+    let limit = parseInt(req.query.limit) ||10;
+    limit = limit>50 ? 50 : limit
+    const skip = (pageNo-1)*limit; // pages to skip
 
+
+
+    
     const hideUsersfromFeed = new Set();
 
     connectionRequests.forEach((req) => {
@@ -37,7 +44,7 @@ const feedController = async (req, res) => {
         { _id: { $nin: Array.from(hideUsersfromFeed) } },
         { _id: { $ne: req.userid } },
       ],
-    }).select("-password -email");
+    }).select("-password -email").skip(skip).limit(limit);
 
     //bug fixed
     //the .select("-field1  -field2") excludes the two fields and includes other fileds to send from the DB so in this API I want to exclude user password & user email to be
