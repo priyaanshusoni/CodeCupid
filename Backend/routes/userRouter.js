@@ -14,8 +14,7 @@ const userRouter = router;
 userRouter.get("/feed", userAuth, feedController);
 userRouter.put("/update", userAuth, updateController);
 userRouter.get("/requests/received", userAuth, requestController); //rpute for user to see all the requeststhat are sent to him by someone else on the platform
-userRouter.get("/connections", userAuth, connectionController); //rpute for user to see all the requeststhat are sent to him by someone else on the platform
-
+userRouter.get("/connections", userAuth, connectionController);
 // userRouter.post("/connectionrequest");
 module.exports = {
   userRouter,

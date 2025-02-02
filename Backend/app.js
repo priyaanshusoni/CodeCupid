@@ -17,7 +17,7 @@ app.use("/profile", profileRouter);
 app.use("/request", connectionRouter);
 async function main() {
   try {
-    await connectDB();
+    await connectDB(); 
     app.listen(process.env.port || 3000, () => {
       console.log(
         `Server has started on port http://localhost:${
@@ -27,6 +27,7 @@ async function main() {
     });
   } catch (error) {
     console.log(error);
+    
   }
 }
 
